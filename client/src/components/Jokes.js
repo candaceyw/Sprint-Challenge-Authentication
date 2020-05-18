@@ -1,25 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import setAuthToken from '../utils/setAuthToken';
+
 import axios from 'axios';
 
 const Jokes = ({ data }) => {
+	const [loggedIn, setLoginState] = useState(false);
 	const [jokes, setJokes] = useState([]);
 	const history = useHistory();
 
 	const config = {
 		headers: {
 			'Content-Type': 'application/json',
-			authorization: localStorage.getItem('token'),
+			Authorization: localStorage.getItem('userToken'),
 		},
+		withCredentials: true,
 	};
 
 	useEffect(() => {
 		axios
-			.get(`http://localhost:3300/api/auth/jokes`, config)
+			.get(`http://localhost:3300/api/auth/jokes`, config, {
+				withCredentials: true,
+			})
 			.then((response) => {
 				localStorage.setItem('token', response.data.token);
+				setAuthToken(localStorage.token);
+
 				setJokes(response.data);
-				history.push('/');
+				setLoginState(true);
 			})
 			.catch(() => {
 				history.push('/jokes');

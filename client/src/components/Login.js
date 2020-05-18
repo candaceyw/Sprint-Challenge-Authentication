@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import setAuthToken from '../utils/setAuthToken';
 
 import axios from 'axios';
 
@@ -17,10 +18,14 @@ const Authenticate = (props) => {
 		e.preventDefault();
 
 		axios
-			.post('http://localhost:3300/api/auth/login', inputField)
+			.post('http://localhost:3300/api/auth/login', inputField, {
+				withCredentials: true,
+			})
 			.then((res) => {
 				localStorage.setItem('token', res.data.token);
 				localStorage.setItem('user', JSON.stringify(res.data.users));
+				setAuthToken(localStorage.token);
+
 				console.log(res.data);
 			})
 			.then(history.push('/jokes'))
